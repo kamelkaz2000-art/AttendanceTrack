@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
                 'email' => 'employee@example.com',
                 'password' => '123456',
                 'phone' => '0911111111',
-                'role_id' => 5,
+                'role_id' => 4,
                 'department_id' => 1,
                 'birth_date' => '1995-01-01',
                 'status' => 'active',

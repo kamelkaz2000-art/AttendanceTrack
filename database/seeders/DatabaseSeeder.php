@@ -13,13 +13,15 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
-public function run(): void
-{
-    $this->call([
-        RoleSeeder::class,
-        DepartmentSeeder::class,
-        PermissionSeeder::class,
-        UserSeeder::class,
-    ]);
-}
+    public function run(): void
+    {
+        $this->call([
+            RoleSeeder::class,
+            DepartmentSeeder::class,    // الأقسام أولاً
+            PermissionSeeder::class,
+            SemesterSeeder::class,    // الفصول الدراسية
+            UserSeeder::class,        // المستخدمون (يعتمدون على الأدوار والأقسام)
+            CourseSeeder::class,      // المقررات (تعتمد على الأقسام، المدرسين، والفصول)
+        ]);
+    }
 }

@@ -12,12 +12,32 @@ class Course extends Model
     protected $table = 'courses';
 
     protected $fillable = [
-        'course_name',
-        'course_code',
-        'credit_hours',
+        'course_name', 'course_code', 'credit_hours', 
+        'department_id', 'instructor_id', 'semester_id', 
+        'academic_year', 'description', 'prerequisite_id', 'status'
     ];
 
-    protected $casts = [
-        'credit_hours' => 'integer',
-    ];
+    // المقرر ينتمي إلى قسم واحد
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
+    }
+
+    // المقرر يشرف عليه مدرس واحد (من جدول المستخدمين users)
+    public function instructor()
+    {
+        return $this->belongsTo(User::class, 'instructor_id');
+    }
+
+    // المقرر يدرس في فصل دراسي واحد
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class, 'semester_id');
+    }
+
+    // المقرر قد يكون له مادة سابقة (متطلب سابق)
+    public function prerequisite()
+    {
+        return $this->belongsTo(Course::class, 'prerequisite_id');
+    }
 }
