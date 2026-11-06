@@ -17,6 +17,11 @@ class Course extends Model
         'academic_year', 'description', 'prerequisite_id', 'status'
     ];
 
+    // أضف هذه الخاصية للتحويل البرمجي للأنواع (مطلوبة في الوظيفة)
+    protected $casts = [
+        'credit_hours' => 'integer',
+    ];
+
     // المقرر ينتمي إلى قسم واحد
     public function department()
     {
@@ -39,5 +44,11 @@ class Course extends Model
     public function prerequisite()
     {
         return $this->belongsTo(Course::class, 'prerequisite_id');
+    }
+
+    // (أضف هذه العلاقة) للتحقق من عدم حذف المادة إذا كانت مرتبطة بشعب
+    public function sections()
+    {
+        return $this->hasMany(Section::class, 'course_id');
     }
 }

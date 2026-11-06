@@ -72,7 +72,14 @@ Route::group(['middleware' => ['role:system_admin,department_manager,department_
     Route::get('/courses/{id}', [CourseController::class, 'show'])->name('courses.show');
     Route::get('/courses/{id}/edit', [CourseController::class, 'edit'])->name('courses.edit');
     Route::put('/courses/{id}', [CourseController::class, 'update'])->name('courses.update');
+    
+    // مسار حذف المقرر (حصري لمدير القسم)
     Route::delete('/courses/{id}', [CourseController::class, 'destroy'])
         ->middleware(['role:system_admin,department_manager'])
         ->name('courses.destroy');
+
+    // أضف هذا المسار لتغيير حالة المقرر (حصري لمدير القسم أيضاً)
+    Route::patch('/courses/{id}/status', [CourseController::class, 'changeStatus'])
+        ->middleware(['role:system_admin,department_manager'])
+        ->name('courses.changeStatus');
 });

@@ -50,6 +50,13 @@
     </div>
 
     <div class="card">
+        <h2>إدارة المقررات</h2>
+        <p>إضافة وعرض وتعديل المقررات الدراسية.</p>
+        <a href="{{ route('courses.index') }}">عرض المقررات</a>
+        <a href="{{ route('courses.create') }}">إضافة مقرر</a>
+    </div>
+
+    <div class="card">
         <h2>تسجيل الخروج</h2>
         <form action="{{ route('logout') }}" method="POST">
             @csrf

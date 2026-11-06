@@ -28,9 +28,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('semesters');
     }
-    
-    public function courses()
-{
-    return $this->hasMany(Course::class, 'semester_id');
-}
 };
