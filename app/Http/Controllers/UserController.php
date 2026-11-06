@@ -197,19 +197,42 @@ public function toggleStatus($id)
     // عرض جميع المستخدمين
     public function index()
     {
-        $users = User::with(['role', 'department'])->get();
+        $query = User::with(['role', 'department']);
+
+        // مدير النظام يستطيع مشاهدة جميع المستخدمين
+        if (auth()->user()->role->role_name !== 'system_admin') {
+            // مدير وموظف القسم يشاهدون مستخدمي قسمهم فقط
+            $query->where(
+                'department_id',
+                auth()->user()->department_id
+            );
+        }
+
+        $users = $query->get();
 
         return view('users.index', compact('users'));
     }
+
 
     // عرض صفحة إضافة مستخدم
     public function create()
     {
         $roles = Role::all();
-        $departments = Department::all();
+
+        // مدير النظام يستطيع اختيار أي قسم
+        if (auth()->user()->role->role_name === 'system_admin') {
+            $departments = Department::all();
+        } else {
+            // مدير وموظف القسم يستطيعان اختيار قسمهما فقط
+            $departments = Department::where(
+                'id',
+                auth()->user()->department_id
+            )->get();
+        }
 
         return view('users.create', compact('roles', 'departments'));
     }
+
 
     // حفظ مستخدم جديد
     public function store(Request $request)
@@ -230,6 +253,11 @@ public function toggleStatus($id)
             ],
         ]);
 
+        // غير مدير النظام يضيف المستخدمين ضمن قسمه فقط
+        if (auth()->user()->role->role_name !== 'system_admin') {
+            $data['department_id'] = auth()->user()->department_id;
+        }
+
         if ($request->hasFile('photo')) {
             $data['photo'] = $request->file('photo')
                 ->store('users', 'public');
@@ -243,21 +271,35 @@ public function toggleStatus($id)
             ->with('success', 'تمت إضافة المستخدم بنجاح');
     }
 
+
     // عرض تفاصيل مستخدم
     public function show($id)
     {
-        $user = User::with(['role', 'department'])->findOrFail($id);
+        $user = $this->findUserForCurrentDepartment($id);
+
+        $user->load(['role', 'department']);
 
         return view('users.show', compact('user'));
     }
 
+
     // عرض صفحة تعديل المستخدم
     public function edit($id)
     {
-        $user = User::findOrFail($id);
+        $user = $this->findUserForCurrentDepartment($id);
 
         $roles = Role::all();
-        $departments = Department::all();
+
+        // مدير النظام يستطيع اختيار أي قسم
+        if (auth()->user()->role->role_name === 'system_admin') {
+            $departments = Department::all();
+        } else {
+            // باقي الأدوار يظهر لهم قسمهم فقط
+            $departments = Department::where(
+                'id',
+                auth()->user()->department_id
+            )->get();
+        }
 
         return view('users.edit', compact(
             'user',
@@ -266,10 +308,13 @@ public function toggleStatus($id)
         ));
     }
 
+
     // حفظ التعديلات
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        $user = $this->findUserForCurrentDepartment($id);
+
+        $roleName = auth()->user()->role->role_name;
 
         $data = $request->validate([
             'full_name' => 'required|string|max:100',
@@ -285,9 +330,29 @@ public function toggleStatus($id)
                 'date',
                 'before_or_equal:' . now()->subYears(18)->toDateString(),
             ],
-            'status' => 'required|in:active,inactive',
         ]);
 
+        // مدير النظام ومدير القسم يستطيعان تغيير الحالة
+        if (
+            $roleName === 'system_admin' ||
+            $roleName === 'department_manager'
+        ) {
+            $statusData = $request->validate([
+                'status' => 'required|in:active,inactive',
+            ]);
+
+            $data['status'] = $statusData['status'];
+        }
+
+        // الموظف لا يستطيع تغيير حالة المستخدم
+        // لذلك لا نضيف status إلى بيانات التحديث الخاصة به
+
+        // غير مدير النظام لا يستطيع نقل المستخدم لقسم آخر
+        if ($roleName !== 'system_admin') {
+            $data['department_id'] = auth()->user()->department_id;
+        }
+
+        // إذا لم يدخل المستخدم كلمة مرور جديدة نبقي القديمة
         if (empty($data['password'])) {
             unset($data['password']);
         }
@@ -303,10 +368,11 @@ public function toggleStatus($id)
             ->with('success', 'تم تعديل المستخدم بنجاح');
     }
 
+
     // حذف مستخدم
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
+        $user = $this->findUserForCurrentDepartment($id);
 
         $user->delete();
 
@@ -314,12 +380,13 @@ public function toggleStatus($id)
             ->with('success', 'تم حذف المستخدم بنجاح');
     }
 
+
     // تغيير حالة المستخدم
     public function toggleStatus($id)
     {
-        $user = User::findOrFail($id);
+        $user = $this->findUserForCurrentDepartment($id);
 
-        $user->status = $user->status == 'active'
+        $user->status = $user->status === 'active'
             ? 'inactive'
             : 'active';
 
@@ -329,5 +396,22 @@ public function toggleStatus($id)
             ->with('success', 'تم تغيير حالة المستخدم');
     }
 
+
+    // جلب المستخدم حسب قسم المستخدم الحالي
+    private function findUserForCurrentDepartment($id)
+    {
+        $query = User::query();
+
+        // مدير النظام يستطيع الوصول لجميع المستخدمين
+        if (auth()->user()->role->role_name !== 'system_admin') {
+            // باقي الأدوار يصلون لمستخدمي قسمهم فقط
+            $query->where(
+                'department_id',
+                auth()->user()->department_id
+            );
+        }
+
+        return $query->findOrFail($id);
+    }
 
 }

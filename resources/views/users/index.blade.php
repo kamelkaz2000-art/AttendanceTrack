@@ -21,6 +21,14 @@
 
     <br><br>
 
+    @php
+        $roleName = auth()->user()->role->role_name;
+        $canDeleteAndChangeStatus = in_array($roleName, [
+            'system_admin',
+            'department_manager'
+        ]);
+    @endphp
+
     <table border="1" cellpadding="10">
         <thead>
             <tr>
@@ -33,8 +41,11 @@
                 <th>الحالة</th>
                 <th>التفاصيل</th>
                 <th>تعديل</th>
-                <th>حذف</th>
-                <th>تغيير الحالة</th>
+
+                @if ($canDeleteAndChangeStatus)
+                    <th>حذف</th>
+                    <th>تغيير الحالة</th>
+                @endif
             </tr>
         </thead>
 
@@ -64,32 +75,36 @@
                         </a>
                     </td>
 
-                    <td>
-                        <form action="{{ route('users.destroy', $user->id) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
+                    @if ($canDeleteAndChangeStatus)
+                        <td>
+                            <form action="{{ route('users.destroy', $user->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
 
-                            <button type="submit"
-                                onclick="return confirm('هل أنت متأكد من الحذف؟')">
-                                حذف
-                            </button>
-                        </form>
-                    </td>
+                                <button type="submit"
+                                    onclick="return confirm('هل أنت متأكد من الحذف؟')">
+                                    حذف
+                                </button>
+                            </form>
+                        </td>
 
-                    <td>
-                        <form action="{{ route('users.toggleStatus', $user->id) }}" method="POST">
-                            @csrf
-                            @method('PATCH')
+                        <td>
+                            <form action="{{ route('users.toggleStatus', $user->id) }}" method="POST">
+                                @csrf
+                                @method('PATCH')
 
-                            <button type="submit">
-                                {{ $user->status == 'active' ? 'تعطيل' : 'تفعيل' }}
-                            </button>
-                        </form>
-                    </td>
+                                <button type="submit">
+                                    {{ $user->status == 'active' ? 'تعطيل' : 'تفعيل' }}
+                                </button>
+                            </form>
+                        </td>
+                    @endif
                 </tr>
             @empty
                 <tr>
-                    <td colspan="11">لا يوجد مستخدمون حالياً</td>
+                    <td colspan="{{ $canDeleteAndChangeStatus ? 11 : 9 }}">
+                        لا يوجد مستخدمون حالياً
+                    </td>
                 </tr>
             @endforelse
         </tbody>
