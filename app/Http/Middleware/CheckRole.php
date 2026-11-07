@@ -8,6 +8,20 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckRole
 {
+    /*
+    public function handle(Request $request, Closure $next, $role)
+    {
+        if (!session()->has('username')) {
+            return redirect('/login');
+        }
+
+        if (session('role') != $role) {
+            abort(403, 'ليس لديك صلاحية للوصول إلى هذه الصفحة');
+        }
+
+        return $next($request);
+    }
+    */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         // التحقق من تسجيل الدخول
