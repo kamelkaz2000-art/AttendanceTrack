@@ -91,6 +91,14 @@ class AuthController extends Controller
                 'department_manager',
                 'department_employee'
             ])) {
+
+                // ===== إضافة الكتلة الثانية (إدارة المواد) - عمر =====
+                // توجيه مدير وموظف "قسم المواد" تلقائياً إلى الصفحة الرئيسية الخاصة بكتلتهم
+                // (باقي المستخدمين يكملون إلى لوحة التحكم كما كان سابقاً بدون أي تغيير)
+                if (Auth::user()->department?->department_name === 'قسم المواد') {
+                    return redirect()->route('courses.home');
+                }
+
                 return redirect()->route('dashboard');
             }
 

@@ -49,6 +49,19 @@
         <a href="{{ route('users.create') }}">إضافة مستخدم</a>
     </div>
 
+    {{-- ===== إضافة الكتلة الثانية (إدارة المواد) - عمر ===== --}}
+    {{-- بطاقة الوصول إلى كتلة المواد: تظهر لمدير النظام ولمستخدمي قسم المواد فقط --}}
+    @if (auth()->user()->role?->role_name === 'system_admin'
+        || auth()->user()->department?->department_name === 'قسم المواد')
+        <div class="card">
+            <h2>إدارة المواد والمقررات</h2>
+            <p>إضافة وعرض وتعديل المواد الدراسية وتغيير حالتها.</p>
+            <a href="{{ route('courses.home') }}">الصفحة الرئيسية للمواد</a>
+            <a href="{{ route('courses.index') }}">عرض المواد</a>
+            <a href="{{ route('courses.create') }}">إضافة مادة</a>
+        </div>
+    @endif
+
     <div class="card">
         <h2>تسجيل الخروج</h2>
         <form action="{{ route('logout') }}" method="POST">

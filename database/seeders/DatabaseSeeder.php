@@ -16,6 +16,13 @@ class DatabaseSeeder extends Seeder
             DepartmentSeeder::class,
             PermissionSeeder::class,
             UserSeeder::class,
+
+            // ===== إضافة الكتلة الثانية (إدارة المواد) - عمر =====
+            // الترتيب مهم: الفصول والأقسام والمستخدمين قبل المواد لأن المواد مرتبطة بها
+            SemesterSeeder::class,           // الفصول الدراسية (أول، ثاني، صيفي)
+            AcademicDepartmentSeeder::class, // الأقسام الأكاديمية التي تتبع لها المواد
+            CourseUserSeeder::class,         // مدير وموظف قسم المواد + المدرسين
+            CourseSeeder::class,             // المواد الدراسية التجريبية
         ]);
     }
 }

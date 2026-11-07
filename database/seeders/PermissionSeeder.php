@@ -66,6 +66,16 @@ class PermissionSeeder extends Seeder
             }
 
             foreach ($rolePermissions as $permissionName) {
+
+                // ===== إضافة (عمر) لمنع خطأ عند تشغيل migrate:fresh --seed =====
+                // الحقل permission_name فريد (UNIQUE) في جدول permissions،
+                // وبعض الأسماء مكررة بين الأدوار (مثل "عرض المستخدمين" لمدير النظام ومدير القسم)
+                // فإضافة نفس الاسم مرة ثانية كانت تسبب خطأ UniqueConstraintViolation وتوقف باقي الـ Seeders
+                // الحل: إذا كان اسم الصلاحية موجوداً مسبقاً نتخطاه (بدون تعديل الكود الأصلي تحت)
+                if (Permission::where('permission_name', $permissionName)->exists()) {
+                    continue;
+                }
+
                 Permission::firstOrCreate([
                     'permission_name' => $permissionName,
                     'role_id' => $role->id,
