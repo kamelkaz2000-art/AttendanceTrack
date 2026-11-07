@@ -4,6 +4,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>إدارة المستخدمين</title>
 </head>
 
@@ -15,6 +16,14 @@
         <p>{{ session('success') }}</p>
     @endif
 
+    @if ($errors->any())
+        <div>
+            @foreach ($errors->all() as $error)
+                <p>{{ $error }}</p>
+            @endforeach
+        </div>
+    @endif
+
     <br>
 
     <a href="{{ route('users.create') }}">إضافة مستخدم جديد</a>
@@ -22,11 +31,12 @@
     <br><br>
 
     @php
-        $roleName = auth()->user()->role->role_name;
+        $roleName = auth()->user()->role?->role_name;
+
         $canDeleteAndChangeStatus = in_array($roleName, [
             'system_admin',
             'department_manager'
-        ]);
+        ], true);
     @endphp
 
     <table border="1" cellpadding="10">
@@ -56,8 +66,8 @@
                     <td>{{ $user->full_name }}</td>
                     <td>{{ $user->username }}</td>
                     <td>{{ $user->email }}</td>
-                    <td>{{ $user->role->description }}</td>
-                    <td>{{ $user->department->department_name }}</td>
+                    <td>{{ $user->role?->description ?? 'غير محدد' }}</td>
+                    <td>{{ $user->department?->department_name ?? 'غير محدد' }}</td>
 
                     <td>
                         {{ $user->status == 'active' ? 'نشط' : 'غير نشط' }}

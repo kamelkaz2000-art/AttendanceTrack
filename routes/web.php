@@ -4,60 +4,58 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 
-// عرض صفحة تسجيل الدخول
+// تسجيل الدخول والخروج
 Route::get('/login', [AuthController::class, 'showLogin'])
     ->name('login');
 
-// معالجة بيانات تسجيل الدخول
 Route::post('/login', [AuthController::class, 'login'])
     ->name('login.submit');
 
-// تسجيل الخروج
 Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
-    // لوحة التحكم
+// لوحة التحكم
 Route::get('/dashboard', function () {
-    return view('dashboard');})
+    return view('dashboard');
+})
     ->middleware(['role:system_admin,department_manager,department_employee'])
     ->name('dashboard');
 
-// عرض قائمة المستخدمين
-Route::get('/users', [UserController::class, 'index'])
-    ->middleware(['role:system_admin,department_manager,department_employee'])
-    ->name('users.index');
+// إدارة المستخدمين
+Route::middleware([
+    'role:system_admin,department_manager,department_employee',
+    'department:قسم المستخدمين',
+])->group(function () {
 
-// عرض صفحة إضافة مستخدم
-Route::get('/users/create', [UserController::class, 'create'])
-    ->middleware(['role:system_admin,department_manager,department_employee'])
-    ->name('users.create');
+    // عرض جميع المستخدمين
+    Route::get('/users', [UserController::class, 'index'])
+        ->name('users.index');
 
-// حفظ مستخدم جديد
-Route::post('/users', [UserController::class, 'store'])
-    ->middleware(['role:system_admin,department_manager,department_employee'])
-    ->name('users.store');
+    // إضافة مستخدم
+    Route::get('/users/create', [UserController::class, 'create'])
+        ->name('users.create');
 
-// عرض تفاصيل مستخدم
-Route::get('/users/{id}', [UserController::class, 'show'])
-    ->middleware(['role:system_admin,department_manager,department_employee'])
-    ->name('users.show');
+    Route::post('/users', [UserController::class, 'store'])
+        ->name('users.store');
 
-// عرض صفحة تعديل المستخدم
-Route::get('/users/{id}/edit', [UserController::class, 'edit'])
-    ->middleware(['role:system_admin,department_manager,department_employee'])
-    ->name('users.edit');
+    // عرض تفاصيل مستخدم
+    Route::get('/users/{id}', [UserController::class, 'show'])
+        ->name('users.show');
 
-// حفظ التعديلات على المستخدم
-Route::put('/users/{id}', [UserController::class, 'update'])
-    ->middleware(['role:system_admin,department_manager,department_employee'])
-    ->name('users.update');
+    // تعديل مستخدم
+    Route::get('/users/{id}/edit', [UserController::class, 'edit'])
+        ->name('users.edit');
 
-// حذف مستخدم
-Route::delete('/users/{id}', [UserController::class, 'destroy'])
-    ->middleware(['role:system_admin,department_manager'])
-    ->name('users.destroy');
+    Route::put('/users/{id}', [UserController::class, 'update'])
+        ->name('users.update');
 
-// تغيير حالة المستخدم
-Route::patch('/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])
-    ->middleware(['role:system_admin,department_manager'])
-    ->name('users.toggleStatus');
+    // الحذف وتغيير الحالة: مدير القسم ومدير النظام فقط
+    Route::middleware(['role:system_admin,department_manager'])->group(function () {
+
+        Route::delete('/users/{id}', [UserController::class, 'destroy'])
+            ->name('users.destroy');
+
+        Route::patch('/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])
+            ->name('users.toggleStatus');
+    });
+});

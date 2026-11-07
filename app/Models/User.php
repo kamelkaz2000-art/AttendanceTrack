@@ -36,15 +36,28 @@ class User extends Authenticatable
         ];
     }
 
-    // المستخدم ينتمي إلى دور واحد
     public function role()
     {
         return $this->belongsTo(Role::class);
     }
 
-    // المستخدم ينتمي إلى قسم واحد
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+
+    public function courses()
+    {
+        return $this->hasMany(Course::class, 'instructor_id');
+    }
+
+    public function sections()
+    {
+        return $this->hasMany(Section::class, 'instructor_id');
+    }
+
+    public function lectures()
+    {
+        return $this->hasMany(Lecture::class, 'instructor_id');
     }
 }

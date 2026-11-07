@@ -12,11 +12,15 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $adminRole = Role::where('role_name', 'system_admin')->firstOrFail();
-
+        $managerRole = Role::where('role_name', 'department_manager')->firstOrFail();
         $employeeRole = Role::where('role_name', 'department_employee')->firstOrFail();
 
-        $department = Department::where('department_name', 'الإدارة')->firstOrFail();
+        $department = Department::where(
+            'department_name',
+            'قسم المستخدمين'
+        )->firstOrFail();
 
+        // مدير النظام
         User::firstOrCreate(
             ['username' => 'admin'],
             [
@@ -31,6 +35,7 @@ class UserSeeder extends Seeder
             ]
         );
 
+        // موظف قسم المستخدمين
         User::firstOrCreate(
             ['username' => 'employee'],
             [
@@ -44,5 +49,22 @@ class UserSeeder extends Seeder
                 'status' => 'active',
             ]
         );
+
+        // مدير قسم المستخدمين
+        User::firstOrCreate(
+            ['username' => 'manager'],
+            [
+                'full_name' => 'كامل',
+                'email' => 'manager@example.com',
+                'password' => '123456',
+                'phone' => '0922222222',
+                'role_id' => $managerRole->id,
+                'department_id' => $department->id,
+                'birth_date' => '1992-01-01',
+                'status' => 'active',
+            ]
+        );
+
+        
     }
 }
