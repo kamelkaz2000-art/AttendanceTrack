@@ -10,9 +10,11 @@ return new class extends Migration
     {
         Schema::create('permissions', function (Blueprint $table) {
             $table->id();
-            $table->string('permission_name', 100)->unique();
+            $table->string('permission_name', 100);
             $table->foreignId('role_id')->constrained('roles');
             $table->timestamp('created_at')->useCurrent();
+
+            $table->unique(['permission_name', 'role_id']);
         });
     }
 
