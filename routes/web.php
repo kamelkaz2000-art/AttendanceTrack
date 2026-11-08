@@ -43,7 +43,7 @@ Route::post('/logout', [AuthController::class, 'logout'])
 Route::get('/dashboard', function () {
     return view('dashboard');
 })
-    ->middleware(['role:system_admin,department_manager,department_employee'])
+    ->middleware(['role:system_admin'])
     ->name('dashboard');
 
 // إدارة المستخدمين

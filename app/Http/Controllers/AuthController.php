@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 class AuthController extends Controller
 {
     /*
@@ -60,7 +61,8 @@ class AuthController extends Controller
 
         return redirect('/login');
     }
-        */
+    */
+
     public function showLogin()
     {
         return view('auth.login');
@@ -74,7 +76,6 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        // التحقق من اسم المستخدم وكلمة المرور والحالة
         if (Auth::attempt([
             'username' => $credentials['username'],
             'password' => $credentials['password'],
@@ -83,24 +84,33 @@ class AuthController extends Controller
 
             $request->session()->regenerate();
 
-            $userRole = Auth::user()->role->role_name;
+            $user = Auth::user();
+            $userRole = $user->role?->role_name;
 
-            // الأدوار التابعة لكتلة إدارة المستخدمين
-            if (in_array($userRole, [
-                'system_admin',
-                'department_manager',
-                'department_employee'
-            ])) {
+            // مدير النظام يذهب إلى لوحة التحكم
+            if ($userRole === 'system_admin') {
                 return redirect()->route('dashboard');
             }
 
-            // الأدوار الأخرى خارج نطاق هذه الكتلة حالياً
+            // موظفو ومديرو قسم المستخدمين يذهبون إلى صفحة القسم
+            if (
+                in_array($userRole, [
+                    'department_manager',
+                    'department_employee'
+                ]) &&
+                $user->department?->department_name === 'قسم المستخدمين'
+            ) {
+                return redirect()->route('users.index');
+            }
+
+            // الأقسام الأخرى نضيف توجيهها عند تجهيز صفحاتها
             Auth::logout();
+
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
             return redirect()->route('login')
-                ->with('error', 'ليس لديك صلاحية الدخول إلى هذه الكتلة');
+                ->with('error', 'لا توجد صفحة مفعّلة لهذا القسم حالياً');
         }
 
         return back()

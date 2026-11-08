@@ -1,62 +1,96 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <title>لوحة التحكم - AttendanceTrack</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            margin: 0;
-            padding: 30px;
-        }
 
-        .container {
-            max-width: 900px;
-            margin: auto;
-        }
+@extends('layouts.app')
 
-        .card {
-            background: white;
-            padding: 25px;
-            margin-top: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px #ddd;
-        }
+@section('title', 'لوحة التحكم - AttendanceTrack')
 
-        a, button {
-            display: inline-block;
-            background: #2563eb;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            text-decoration: none;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
+@section('content')
 
-<div class="container">
-    <h1>لوحة التحكم</h1>
-    <p>مرحباً بك في نظام AttendanceTrack</p>
+    <!-- عنوان الصفحة -->
+    <div class="mb-8">
+        <p class="text-blue-600 font-bold text-sm mb-2">
+            لوحة الإدارة الرئيسية
+        </p>
 
-    <div class="card">
-        <h2>إدارة المستخدمين</h2>
-        <p>إضافة وعرض وتعديل بيانات المستخدمين.</p>
-        <a href="{{ route('users.index') }}">عرض المستخدمين</a>
-        <a href="{{ route('users.create') }}">إضافة مستخدم</a>
+        <h2 class="text-3xl font-extrabold text-slate-800 mb-3">
+            مرحباً، {{ Auth::user()->full_name }}
+        </h2>
+
+        <p class="text-slate-500">
+            من هنا يمكنك الوصول إلى أقسام النظام وإدارة المستخدمين.
+        </p>
     </div>
 
-    <div class="card">
-        <h2>تسجيل الخروج</h2>
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit">تسجيل الخروج</button>
-        </form>
-    </div>
-</div>
+    <!-- بطاقات لوحة التحكم -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
-</body>
-</html>
+        <!-- إدارة المستخدمين -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-7 hover:shadow-lg transition">
+
+            <div class="w-14 h-14 bg-blue-100 text-blue-700 rounded-2xl flex items-center justify-center text-3xl mb-5">
+                👥
+            </div>
+
+            <h3 class="text-xl font-extrabold text-slate-800 mb-3">
+                إدارة المستخدمين
+            </h3>
+
+            <p class="text-slate-500 text-sm leading-7 mb-6">
+                عرض المستخدمين وإضافة حسابات جديدة وتعديل بياناتهم وإدارة حالات الحسابات.
+            </p>
+
+            <div class="flex flex-wrap gap-3">
+                <a href="{{ route('users.index') }}"
+                   class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-3 rounded-xl text-sm font-bold transition">
+                    عرض المستخدمين
+                </a>
+
+                <a href="{{ route('users.create') }}"
+                   class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-3 rounded-xl text-sm font-bold transition">
+                    إضافة مستخدم
+                </a>
+            </div>
+        </div>
+
+        <!-- إدارة النظام -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-7 hover:shadow-lg transition">
+
+            <div class="w-14 h-14 bg-indigo-100 text-indigo-700 rounded-2xl flex items-center justify-center text-3xl mb-5">
+                ⚙️
+            </div>
+
+            <h3 class="text-xl font-extrabold text-slate-800 mb-3">
+                إدارة النظام
+            </h3>
+
+            <p class="text-slate-500 text-sm leading-7 mb-6">
+                مساحة مخصصة لمدير النظام لمتابعة الأقسام وإدارة صلاحيات المستخدمين.
+            </p>
+
+            <span class="inline-block bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg text-sm font-bold">
+                صلاحيات مدير النظام
+            </span>
+        </div>
+
+        <!-- معلومات الحساب -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-7 hover:shadow-lg transition">
+
+            <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center text-3xl mb-5">
+                🛡️
+            </div>
+
+            <h3 class="text-xl font-extrabold text-slate-800 mb-3">
+                الحساب والصلاحيات
+            </h3>
+
+            <p class="text-slate-500 text-sm leading-7 mb-6">
+                أنت مسجل الدخول بصفتك مدير النظام وتملك صلاحية الوصول إلى لوحة الإدارة.
+            </p>
+
+            <span class="inline-block bg-emerald-50 text-emerald-700 px-4 py-2 rounded-lg text-sm font-bold">
+                الحساب نشط
+            </span>
+        </div>
+
+    </div>
+
+@endsection
