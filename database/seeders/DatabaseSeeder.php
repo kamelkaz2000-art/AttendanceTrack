@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             DepartmentSeeder::class,
             PermissionSeeder::class,
             UserSeeder::class,
+            ExamsGradesSeeder::class, // الكتلة الخامسة: الامتحانات والدرجات
         ]);
     }
 }

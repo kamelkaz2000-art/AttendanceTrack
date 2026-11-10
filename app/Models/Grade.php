@@ -9,7 +9,8 @@ class Grade extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
+    // الكتلة الخامسة: تفعيل created_at و updated_at لتتبع تعديل الدرجات
+    public $timestamps = true;
 
     protected $fillable = [
         'exam_id',
@@ -20,6 +21,7 @@ class Grade extends Model
 
     protected $casts = [
         'recorded_date' => 'date',
+        'grade' => 'decimal:2',
     ];
 
     public function exam()

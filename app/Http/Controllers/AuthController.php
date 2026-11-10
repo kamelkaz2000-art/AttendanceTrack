@@ -103,6 +103,17 @@ class AuthController extends Controller
                 return redirect()->route('users.index');
             }
 
+            // الكتلة الخامسة: موظفو ومديرو قسم الامتحانات يذهبون إلى الصفحة الرئيسية للقسم
+            if (
+                in_array($userRole, [
+                    'department_manager',
+                    'department_employee'
+                ]) &&
+                $user->department?->department_name === 'قسم الامتحانات'
+            ) {
+                return redirect()->route('exams.home');
+            }
+
             // الأقسام الأخرى نضيف توجيهها عند تجهيز صفحاتها
             Auth::logout();
 

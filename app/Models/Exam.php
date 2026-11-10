@@ -9,7 +9,8 @@ class Exam extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
+    // الكتلة الخامسة: تفعيل created_at و updated_at لتتبع تعديلات الامتحان
+    public $timestamps = true;
 
     protected $fillable = [
         'exam_type_id',
@@ -25,7 +26,15 @@ class Exam extends Model
 
     protected $casts = [
         'exam_date' => 'date',
+        'max_grade' => 'decimal:2',
+        'min_grade' => 'decimal:2',
     ];
+
+    // هل يحتوي الامتحان على درجات مسجلة؟ (يمنع الحذف)
+    public function hasGrades(): bool
+    {
+        return $this->grades()->exists();
+    }
 
     public function examType()
     {

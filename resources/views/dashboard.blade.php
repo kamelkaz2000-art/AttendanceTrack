@@ -51,6 +51,34 @@
             </div>
         </div>
 
+        <!-- الكتلة الخامسة: الامتحانات والدرجات -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-7 hover:shadow-lg transition">
+
+            <div class="w-14 h-14 bg-amber-100 text-amber-700 rounded-2xl flex items-center justify-center text-3xl mb-5">
+                📝
+            </div>
+
+            <h3 class="text-xl font-extrabold text-slate-800 mb-3">
+                الامتحانات والدرجات
+            </h3>
+
+            <p class="text-slate-500 text-sm leading-7 mb-6">
+                إدارة الامتحانات ورصد درجات الطلاب وإصدار كشوف النتائج النهائية.
+            </p>
+
+            <div class="flex flex-wrap gap-3">
+                <a href="{{ route('exams.home') }}"
+                   class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-3 rounded-xl text-sm font-bold transition">
+                    قسم الامتحانات
+                </a>
+
+                <a href="{{ route('grades.results') }}"
+                   class="bg-amber-50 hover:bg-amber-100 text-amber-700 px-4 py-3 rounded-xl text-sm font-bold transition">
+                    إصدار النتائج
+                </a>
+            </div>
+        </div>
+
         <!-- إدارة النظام -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-7 hover:shadow-lg transition">
 
