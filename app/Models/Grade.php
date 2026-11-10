@@ -9,6 +9,15 @@ class Grade extends Model
 {
     use HasFactory;
 
+    /*
+    // الوظيفة الأولى (Assignment 1)
+    protected $fillable = [
+        'exam_id',
+        'student_id',
+        'grade',
+    ];
+    */
+
     // الكتلة الخامسة: تفعيل created_at و updated_at لتتبع تعديل الدرجات
     public $timestamps = true;
 

@@ -1,7 +1,4 @@
-{{--
-    الكتلة الخامسة: صفوف جدول الامتحانات (Grid View)
-    تُستخدم عند تحميل الصفحة وعند البحث عبر Ajax
---}}
+{{-- الكتلة الخامسة: صفوف جدول الامتحانات --}}
 
 @forelse ($exams as $exam)
 
@@ -89,8 +86,8 @@
     <tr>
         <td colspan="9" class="px-5 py-16 text-center">
             <div class="text-4xl mb-3">📝</div>
-            <h3 class="text-lg font-bold text-slate-700 mb-2">لا توجد امتحانات مطابقة</h3>
-            <p class="text-sm text-slate-400">جرّب تغيير فلاتر البحث أو أضف امتحاناً جديداً.</p>
+            <h3 class="text-lg font-bold text-slate-700 mb-2">لا توجد امتحانات حالياً</h3>
+            <p class="text-sm text-slate-400">يمكنك إضافة امتحان جديد من خلال الزر الموجود أعلى الصفحة.</p>
         </td>
     </tr>
 

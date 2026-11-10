@@ -4,8 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ExamController;      // الكتلة الخامسة: الامتحانات
-use App\Http\Controllers\GradeController;     // الكتلة الخامسة: الدرجات والنتائج
-use App\Http\Controllers\ExamTypeController;  // الكتلة الخامسة: أنواع الامتحانات
+use App\Http\Controllers\GradeController;     // الكتلة الخامسة: الدرجات
 
 /*
     // Assignment 1 - User Management Routes
@@ -94,6 +93,38 @@ Route::middleware([
 | اسم الطالب: غازي القوتلي  -  الرقم الجامعي: 202311542
 |==========================================================================
 */
+
+/*
+    // الوظيفة الأولى (Assignment 1) - مسارات الامتحانات ببيانات وهمية
+    // الحذف محمي بصلاحية المدير فقط
+
+    Route::middleware(['role:manager,employee'])->group(function () {
+
+        Route::get('/exams', [ExamController::class, 'index'])
+            ->name('exams.index');
+
+        Route::get('/exams/create', [ExamController::class, 'create'])
+            ->name('exams.create');
+
+        Route::post('/exams', [ExamController::class, 'store'])
+            ->name('exams.store');
+
+        Route::get('/exams/{id}', [ExamController::class, 'show'])
+            ->name('exams.show');
+
+        Route::get('/exams/{id}/edit', [ExamController::class, 'edit'])
+            ->name('exams.edit');
+
+        Route::put('/exams/{id}', [ExamController::class, 'update'])
+            ->name('exams.update');
+    });
+
+    Route::delete('/exams/{id}', [ExamController::class, 'destroy'])
+        ->middleware(['role:manager'])
+        ->name('exams.destroy');
+*/
+
+// الوظيفة الثانية (Assignment 2) - مسارات الامتحانات والدرجات مع قاعدة البيانات
 Route::middleware([
     'role:system_admin,department_manager,department_employee',
     'department:قسم الامتحانات',
@@ -103,7 +134,7 @@ Route::middleware([
     Route::get('/exams/home', [ExamController::class, 'home'])
         ->name('exams.home');
 
-    // عرض الامتحانات والبحث المتقدم (Ajax)
+    // عرض جميع الامتحانات
     Route::get('/exams', [ExamController::class, 'index'])
         ->name('exams.index');
 
@@ -137,34 +168,11 @@ Route::middleware([
         ->whereNumber('id')
         ->name('grades.update');
 
-    // مدير القسم ومدير النظام فقط: الحذف، إصدار النتائج، إدارة أنواع الامتحانات
+    // الحذف: مدير القسم ومدير النظام فقط
     Route::middleware(['role:system_admin,department_manager'])->group(function () {
 
         Route::delete('/exams/{id}', [ExamController::class, 'destroy'])
             ->whereNumber('id')
             ->name('exams.destroy');
-
-        // إصدار النتائج: كشف حسب الشعبة وكشف لكل طالب
-        Route::get('/exams/results', [GradeController::class, 'results'])
-            ->name('grades.results');
-
-        Route::get('/exams/results/students/{studentId}', [GradeController::class, 'studentReport'])
-            ->whereNumber('studentId')
-            ->name('grades.studentReport');
-
-        // إدارة أنواع الامتحانات
-        Route::get('/exams/types', [ExamTypeController::class, 'index'])
-            ->name('exam-types.index');
-
-        Route::post('/exams/types', [ExamTypeController::class, 'store'])
-            ->name('exam-types.store');
-
-        Route::put('/exams/types/{id}', [ExamTypeController::class, 'update'])
-            ->whereNumber('id')
-            ->name('exam-types.update');
-
-        Route::delete('/exams/types/{id}', [ExamTypeController::class, 'destroy'])
-            ->whereNumber('id')
-            ->name('exam-types.destroy');
     });
 });

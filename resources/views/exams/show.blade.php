@@ -26,7 +26,7 @@
                 تعديل الامتحان
             </a>
 
-            @if ($isManager && $stats['recorded'] === 0)
+            @if ($isManager && $grades->isEmpty())
                 <form action="{{ route('exams.destroy', $exam->id) }}" method="POST"
                       onsubmit="return confirm('هل أنت متأكد من حذف هذا الامتحان؟')">
                     @csrf
@@ -69,22 +69,6 @@
                 </div>
             @endforeach
         </div>
-    </div>
-
-    <!-- إحصائيات -->
-    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-        @foreach ([
-            ['طلاب الشعبة', $stats['students'], 'bg-blue-50 text-blue-700'],
-            ['درجات مرصودة', $stats['recorded'], 'bg-indigo-50 text-indigo-700'],
-            ['المتوسط', $stats['average'] ?? '—', 'bg-amber-50 text-amber-700'],
-            ['أعلى / أدنى', $stats['recorded'] ? (float) $stats['highest'] . ' / ' . (float) $stats['lowest'] : '—', 'bg-slate-100 text-slate-700'],
-            ['الناجحون', $stats['recorded'] ? $stats['passed'] . ' من ' . $stats['recorded'] : '—', 'bg-green-50 text-green-700'],
-        ] as [$label, $value, $color])
-            <div class="rounded-2xl p-5 {{ $color }}">
-                <p class="text-xs font-bold opacity-80 mb-1">{{ $label }}</p>
-                <p class="text-2xl font-extrabold">{{ $value }}</p>
-            </div>
-        @endforeach
     </div>
 
     <!-- درجات الطلاب -->

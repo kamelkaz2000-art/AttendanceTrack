@@ -11,8 +11,8 @@
         <h2 class="text-3xl font-extrabold text-slate-800 mb-3">مرحباً، {{ Auth::user()->full_name }}</h2>
         <p class="text-slate-500">
             {{ $isManager
-                ? 'بصفتك مدير القسم يمكنك إدارة الامتحانات وحذفها وإصدار النتائج وإدارة أنواع الامتحانات.'
-                : 'بصفتك موظف القسم يمكنك إضافة الامتحانات ورصد الدرجات وتعديلها والبحث وعرض التفاصيل.' }}
+                ? 'بصفتك مدير القسم يمكنك إضافة الامتحانات وتعديلها وحذفها ورصد الدرجات وعرض التفاصيل.'
+                : 'بصفتك موظف القسم يمكنك إضافة الامتحانات وتعديلها ورصد الدرجات وعرض التفاصيل.' }}
         </p>
     </div>
 
@@ -38,9 +38,9 @@
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-7 hover:shadow-lg transition">
             <div class="w-14 h-14 bg-blue-100 text-blue-700 rounded-2xl flex items-center justify-center text-3xl mb-5">📝</div>
             <h3 class="text-xl font-extrabold text-slate-800 mb-3">الامتحانات</h3>
-            <p class="text-slate-500 text-sm leading-7 mb-6">إضافة امتحانات جديدة والبحث عنها وتعديلها وعرض تفاصيلها.</p>
+            <p class="text-slate-500 text-sm leading-7 mb-6">إضافة امتحانات جديدة وعرضها وتعديلها وعرض تفاصيلها.</p>
             <div class="flex flex-wrap gap-3">
-                <a href="{{ route('exams.index') }}" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-3 rounded-xl text-sm font-bold transition">عرض وبحث</a>
+                <a href="{{ route('exams.index') }}" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-3 rounded-xl text-sm font-bold transition">عرض الامتحانات</a>
                 <a href="{{ route('exams.create') }}" class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-3 rounded-xl text-sm font-bold transition">إضافة امتحان</a>
             </div>
         </div>
@@ -52,17 +52,6 @@
             <a href="{{ route('exams.index') }}" class="inline-block bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-4 py-3 rounded-xl text-sm font-bold transition">اختيار امتحان</a>
         </div>
 
-        @if ($isManager)
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-7 hover:shadow-lg transition">
-                <div class="w-14 h-14 bg-indigo-100 text-indigo-700 rounded-2xl flex items-center justify-center text-3xl mb-5">🎓</div>
-                <h3 class="text-xl font-extrabold text-slate-800 mb-3">إدارة القسم</h3>
-                <p class="text-slate-500 text-sm leading-7 mb-6">إصدار كشوف الدرجات النهائية وإدارة أنواع الامتحانات.</p>
-                <div class="flex flex-wrap gap-3">
-                    <a href="{{ route('grades.results') }}" class="bg-indigo-700 hover:bg-indigo-800 text-white px-4 py-3 rounded-xl text-sm font-bold transition">إصدار النتائج</a>
-                    <a href="{{ route('exam-types.index') }}" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-4 py-3 rounded-xl text-sm font-bold transition">أنواع الامتحانات</a>
-                </div>
-            </div>
-        @endif
     </div>
 
     <!-- الامتحانات القادمة -->

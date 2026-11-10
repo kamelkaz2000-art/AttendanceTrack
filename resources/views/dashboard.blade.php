@@ -63,7 +63,7 @@
             </h3>
 
             <p class="text-slate-500 text-sm leading-7 mb-6">
-                إدارة الامتحانات ورصد درجات الطلاب وإصدار كشوف النتائج النهائية.
+                إدارة الامتحانات ورصد درجات الطلاب.
             </p>
 
             <div class="flex flex-wrap gap-3">
@@ -72,9 +72,9 @@
                     قسم الامتحانات
                 </a>
 
-                <a href="{{ route('grades.results') }}"
+                <a href="{{ route('exams.create') }}"
                    class="bg-amber-50 hover:bg-amber-100 text-amber-700 px-4 py-3 rounded-xl text-sm font-bold transition">
-                    إصدار النتائج
+                    إضافة امتحان
                 </a>
             </div>
         </div>

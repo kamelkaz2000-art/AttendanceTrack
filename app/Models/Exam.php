@@ -9,6 +9,16 @@ class Exam extends Model
 {
     use HasFactory;
 
+    /*
+    // الوظيفة الأولى (Assignment 1)
+    protected $fillable = [
+        'exam_type',
+        'exam_date',
+        'max_grade',
+        'section_id',
+    ];
+    */
+
     // الكتلة الخامسة: تفعيل created_at و updated_at لتتبع تعديلات الامتحان
     public $timestamps = true;
 

@@ -6,8 +6,8 @@
 | اسم الطالب: غازي القوتلي  -  الرقم الجامعي: 202311542
 |==========================================================================
 | متحكم الامتحانات:
-| - موظف القسم: إضافة، بحث متقدم (Ajax)، تعديل، عرض التفاصيل
-| - مدير القسم: كل ما سبق + حذف الامتحان (بشرط عدم وجود درجات)
+| - موظف القسم: إضافة، عرض الكل، تعديل، عرض التفاصيل
+| - مدير القسم: كل ما سبق + حذف الامتحان
 */
 
 namespace App\Http\Controllers;
@@ -18,10 +18,87 @@ use App\Models\Exam;
 use App\Models\ExamType;
 use App\Models\Grade;
 use App\Models\Section;
-use Illuminate\Http\Request;
 
 class ExamController extends Controller
 {
+    /*
+    // الوظيفة الأولى (Assignment 1) - بيانات وهمية داخل الكنترولر بدون قاعدة بيانات
+
+    private $exams = [
+        ['id' => 1, 'exam_type' => 'نصفي', 'exam_date' => '2026-11-05', 'max_grade' => 30, 'section_id' => 1],
+        ['id' => 2, 'exam_type' => 'نهائي', 'exam_date' => '2027-01-15', 'max_grade' => 70, 'section_id' => 1],
+        ['id' => 3, 'exam_type' => 'عملي', 'exam_date' => '2026-12-01', 'max_grade' => 20, 'section_id' => 2],
+        ['id' => 4, 'exam_type' => 'شفهي', 'exam_date' => '2026-12-10', 'max_grade' => 10, 'section_id' => 2],
+        ['id' => 5, 'exam_type' => 'نصفي', 'exam_date' => '2026-11-12', 'max_grade' => 30, 'section_id' => 3],
+    ];
+
+    private $grades = [
+        ['id' => 1, 'exam_id' => 1, 'student_id' => 1, 'grade' => 27],
+        ['id' => 2, 'exam_id' => 1, 'student_id' => 2, 'grade' => 18.5],
+        ['id' => 3, 'exam_id' => 1, 'student_id' => 3, 'grade' => 12],
+        ['id' => 4, 'exam_id' => 3, 'student_id' => 4, 'grade' => 17],
+        ['id' => 5, 'exam_id' => 5, 'student_id' => 5, 'grade' => 25],
+    ];
+
+    public function index()
+    {
+        $exams = $this->exams;
+
+        return view('exams.index', compact('exams'));
+    }
+
+    public function create()
+    {
+        return view('exams.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'exam_type' => 'required',
+            'exam_date' => 'required|date',
+            'max_grade' => 'required|numeric|min:10|max:100',
+            'section_id' => 'required|integer',
+        ]);
+
+        return redirect()->route('exams.index');
+    }
+
+    public function show($id)
+    {
+        $exam = collect($this->exams)->firstWhere('id', $id);
+        $grades = collect($this->grades)->where('exam_id', $id);
+
+        return view('exams.show', compact('exam', 'grades'));
+    }
+
+    public function edit($id)
+    {
+        $exam = collect($this->exams)->firstWhere('id', $id);
+
+        return view('exams.edit', compact('exam'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'exam_type' => 'required',
+            'exam_date' => 'required|date',
+            'max_grade' => 'required|numeric|min:10|max:100',
+            'section_id' => 'required|integer',
+        ]);
+
+        return redirect()->route('exams.index');
+    }
+
+    public function destroy($id)
+    {
+        return redirect()->route('exams.index');
+    }
+    */
+
+    // الوظيفة الثانية (Assignment 2) - العمل مع قاعدة البيانات
+
     // هل المستخدم الحالي مدير (مدير النظام أو مدير القسم)؟
     public static function isManager(): bool
     {
@@ -49,40 +126,17 @@ class ExamController extends Controller
         return view('exams.home', compact('stats', 'upcomingExams', 'isManager'));
     }
 
-    // عرض الامتحانات مع البحث المتقدم (يدعم Ajax)
-    public function index(Request $request)
+    // عرض جميع الامتحانات
+    public function index()
     {
-        $filters = $request->validate([
-            'exam_type_id' => 'nullable|integer|exists:exam_types,id',
-            'course_id' => 'nullable|integer|exists:courses,id',
-            'section_id' => 'nullable|integer|exists:sections,id',
-            'exam_date' => 'nullable|date',
-        ]);
-
-        // بناء الاستعلام باستخدام Eloquent (Prepared Statements تلقائياً)
         $exams = Exam::with(['examType', 'course', 'section'])
             ->withCount('grades')
-            ->when($filters['exam_type_id'] ?? null, fn ($q, $v) => $q->where('exam_type_id', $v))
-            ->when($filters['course_id'] ?? null, fn ($q, $v) => $q->where('course_id', $v))
-            ->when($filters['section_id'] ?? null, fn ($q, $v) => $q->where('section_id', $v))
-            ->when($filters['exam_date'] ?? null, fn ($q, $v) => $q->whereDate('exam_date', $v))
             ->orderByDesc('exam_date')
             ->get();
 
         $isManager = self::isManager();
 
-        // طلب Ajax: إرجاع صفوف الجدول فقط دون إعادة تحميل الصفحة
-        if ($request->ajax()) {
-            return response()->json([
-                'html' => view('exams.partials.rows', compact('exams', 'isManager'))->render(),
-                'count' => $exams->count(),
-            ]);
-        }
-
-        return view('exams.index', array_merge(
-            compact('exams', 'isManager', 'filters'),
-            $this->formLists()
-        ));
+        return view('exams.index', compact('exams', 'isManager'));
     }
 
     // صفحة إضافة امتحان
@@ -108,19 +162,9 @@ class ExamController extends Controller
 
         $grades = $exam->grades->sortBy(fn ($g) => $g->student?->full_name);
 
-        // إحصائيات الامتحان
-        $stats = [
-            'students' => $exam->section?->students->count() ?? 0,
-            'recorded' => $grades->count(),
-            'average' => $grades->count() ? round($grades->avg('grade'), 2) : null,
-            'highest' => $grades->max('grade'),
-            'lowest' => $grades->min('grade'),
-            'passed' => $grades->filter(fn ($g) => (float) $g->grade >= (float) $exam->min_grade)->count(),
-        ];
-
         $isManager = self::isManager();
 
-        return view('exams.show', compact('exam', 'grades', 'stats', 'isManager'));
+        return view('exams.show', compact('exam', 'grades', 'isManager'));
     }
 
     // صفحة تعديل الامتحان
@@ -163,7 +207,7 @@ class ExamController extends Controller
             ->with('success', 'تم حذف الامتحان بنجاح');
     }
 
-    // القوائم المنسدلة المشتركة بين صفحات الإضافة والتعديل والبحث (DRY)
+    // القوائم المنسدلة المشتركة بين صفحتي الإضافة والتعديل
     private function formLists(): array
     {
         return [

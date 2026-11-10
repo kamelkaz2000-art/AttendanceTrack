@@ -50,10 +50,6 @@
         <!-- الكتلة الخامسة: قسم الامتحانات والدرجات -->
         @if ($departmentName === 'قسم الامتحانات' || $roleName === 'system_admin')
 
-            @php
-                $isExamsManager = in_array($roleName, ['system_admin', 'department_manager'], true);
-            @endphp
-
             <div class="pt-5 pb-2 px-4">
                 <p class="text-xs font-bold text-slate-500">الامتحانات والدرجات</p>
             </div>
@@ -78,22 +74,6 @@
                 <span>➕</span>
                 <span>إضافة امتحان</span>
             </a>
-
-            @if ($isExamsManager)
-                <a href="{{ route('grades.results') }}"
-                   class="flex items-center gap-3 px-4 py-3 rounded-xl transition
-                   {{ request()->routeIs('grades.results') || request()->routeIs('grades.studentReport') ? 'bg-blue-700 text-white' : 'hover:bg-slate-800' }}">
-                    <span>🎓</span>
-                    <span>إصدار النتائج</span>
-                </a>
-
-                <a href="{{ route('exam-types.index') }}"
-                   class="flex items-center gap-3 px-4 py-3 rounded-xl transition
-                   {{ request()->routeIs('exam-types.index') ? 'bg-blue-700 text-white' : 'hover:bg-slate-800' }}">
-                    <span>🏷️</span>
-                    <span>أنواع الامتحانات</span>
-                </a>
-            @endif
 
         @endif
 
